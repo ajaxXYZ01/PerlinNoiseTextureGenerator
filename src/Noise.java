@@ -1,6 +1,5 @@
-package perlinnoise;
-
 public class Noise {
+
     private int gridWidth, gridHeight;
     public vec2[][] gradients;
 
@@ -9,10 +8,10 @@ public class Noise {
         this.gridHeight = gridHeight;
 
         gradients = new vec2[gridWidth + 1][gridHeight + 1];
-        GenerateGradients();
+        generateGradients();
     }
 
-    private void GenerateGradients() {
+    private void generateGradients() {
         for (int x = 0; x <= gridWidth; x++) {
             for (int y = 0; y <= gridWidth; y++) {
                 double angle = Math.random() * Math.PI * 2;

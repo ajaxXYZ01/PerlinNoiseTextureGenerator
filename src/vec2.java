@@ -1,5 +1,3 @@
-package perlinnoise;
-
 public class vec2 {
 
     private static final float EPSILON = 1e-6f;;
