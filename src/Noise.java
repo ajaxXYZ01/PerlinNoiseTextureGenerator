@@ -85,11 +85,26 @@ public class Noise {
         vec2 d01 = new vec2(local_x    , local_y - 1); // CP
         vec2 d11 = new vec2(local_x - 1, local_y - 1); // DP
 
+        // wrapping the grid cornor co-ordinates to grid size &
+        // to access the gradients[][] safely & sample for infinite noise points
+        //  + Enable Octaves implementation
+
+        int wrap_x0 = x0 % gridWidth;
+        int wrap_y0 = y0 % gridHeight;
+
+        int wrap_x1 = x1 % gridWidth;
+        int wrap_y1 = y1 % gridHeight;
+
+        if (wrap_x0 < 0) wrap_x0 += gridWidth;
+        if (wrap_y0 < 0) wrap_y0 += gridHeight;
+        if (wrap_x1 < 0) wrap_x1 += gridWidth;
+        if (wrap_y1 < 0) wrap_y1 += gridHeight;
+
         // Gradient vectors | randomly rotated vectors
-        vec2 g00 = gradients[x0][y0];
-        vec2 g10 = gradients[x1][y0];
-        vec2 g01 = gradients[x0][y1];
-        vec2 g11 = gradients[x1][y1];
+        vec2 g00 = gradients[wrap_x0][wrap_y0];
+        vec2 g10 = gradients[wrap_x1][wrap_y0];
+        vec2 g01 = gradients[wrap_x0][wrap_y1];
+        vec2 g11 = gradients[wrap_x1][wrap_y1];
 
         // how much is P in direction of the cornors
         float n00 = vec2.dot(g00, d00);
@@ -130,6 +145,25 @@ public class Noise {
         float value = lerp(interp_x0, interp_x1, local_y);
         
         return value; // this is the perlin noise value ranges from [-1, 1]
+    }
+
+    public float sampleFractal(float x, float y, int octaves) {
+
+        float total     = 0;
+        float amplitude = 1;
+        float frequency = 1;
+        float maxValue  = 0;
+
+        for (int octave = 0; octave < octaves; octave++) {
+            total     += sample(x * frequency, y * frequency) * amplitude;
+
+            maxValue  += amplitude;
+
+            amplitude *= 0.5f;
+            frequency *= 2.0f;
+        }
+
+        return total / maxValue;
     }
 
     /*
