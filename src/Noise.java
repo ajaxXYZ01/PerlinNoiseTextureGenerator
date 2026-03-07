@@ -16,7 +16,7 @@ public class Noise {
     // Generating Randomly rotated vectors
     private void generateGradients() {
         for (int x = 0; x <= gridWidth; x++) {
-            for (int y = 0; y <= gridWidth; y++) {
+            for (int y = 0; y <= gridHeight; y++) {
                 double angle = Math.random() * Math.PI * 2;
                 gradients[x][y] = new vec2((float) Math.cos(angle), (float) Math.sin(angle));
             }
@@ -102,11 +102,11 @@ public class Noise {
 
         /*
          * interp_x1
-         * +===>-----+
+         * +====>----+
          * |         |
          * |  value  |
          * |         |
-         * +===>-----+
+         * +====>----+
          * interp_x0
          * 
          * Interpolating the depth values [Horizontally]
@@ -116,13 +116,13 @@ public class Noise {
 
         /*
          * interp_x1
-         * +===>-----+
+         * +====>----+
          * |    |    |
          * |    v    |
          * |  value  |
          * |    ^    |
          * |    |    |
-         * +===>-----+
+         * +====>----+
          * interp_x0
          * 
          * Interpolating interp_x0 and  interp_x1 [Vertically]
