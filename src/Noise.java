@@ -1,3 +1,9 @@
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 public class Noise {
 
     // Grid size
@@ -9,7 +15,7 @@ public class Noise {
         this.gridWidth = gridWidth;
         this.gridHeight = gridHeight;
 
-        gradients = new vec2[gridWidth + 1][gridHeight + 1];
+        gradients = new vec2[gridWidth + 1][gridHeight + 1]; // + 1 to include the last cornor of the grid
         generateGradients();
     }
 
@@ -25,7 +31,7 @@ public class Noise {
 
     /* This is a 4x4 grid size example
      *      1         2         3         4
-     * +---------+---------+---------+---------+
+     * +---------+---------+---------+---------+ <-- last cornor
      * |         |         |         |         |
      * |         |         |         |         | 1
      * |         |         |         |         |
@@ -209,4 +215,56 @@ public class Noise {
 
     int getGridWidth()  { return gridWidth;  }
     int getGridHeight() { return gridHeight; }
+
+    // ----------------------------------------------------------------
+    // SAVE & LOAD
+    // ----------------------------------------------------------------
+
+    // Saves the Noise data as .pnd
+    public void save(String file_name) throws IOException {
+        DataOutputStream writer = new DataOutputStream(new FileOutputStream(file_name));
+
+        writer.writeInt(gridWidth);
+        writer.writeInt(gridHeight);
+
+        for (int x = 0; x <= gridWidth; x++) {
+            for (int y = 0; y <= gridHeight; y++) {
+                vec2 gradient = gradients[x][y];
+
+                writer.writeFloat(gradient.x);
+                writer.writeFloat(gradient.y);
+            }
+        }
+
+        writer.close();
+    }
+
+    public static Noise load(String noise_file_path) throws IOException {
+
+        DataInputStream in = new DataInputStream(new FileInputStream(noise_file_path));
+
+        if (!noise_file_path.endsWith(".pnd")) {
+            in.close();
+            throw new RuntimeException("Invalid file format");
+        }
+
+        int w = in.readInt();
+        int h = in.readInt();
+
+        Noise noise = new Noise(w, h);
+
+        for (int x = 0; x <= w; x++) {
+            for (int y = 0; y <= w; y++) {
+                float gx = in.readFloat();
+                float gy = in.readFloat();
+
+                noise.gradients[x][y].x = gx;
+                noise.gradients[x][y].y = gy;
+            }
+        }
+
+        in.close();
+
+        return noise;
+    }
 }

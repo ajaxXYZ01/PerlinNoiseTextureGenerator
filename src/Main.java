@@ -14,6 +14,14 @@ public class Main {
     Main() {
 
         Noise noise = new Noise(512,512);
+
+        try {
+            // noise.save("data//noise_data.pnd");
+            noise = Noise.load("data//noise_data.pnd");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         int width  = 512;
         int height = 512;
         
