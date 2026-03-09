@@ -79,12 +79,6 @@ public class Noise {
         float local_x = x - x0;
         float local_y = y - y0;
 
-        // Direction vectors of (P) w.r.t the cornors
-        vec2 d00 = new vec2(local_x    , local_y    ); // AP
-        vec2 d10 = new vec2(local_x - 1, local_y    ); // BP
-        vec2 d01 = new vec2(local_x    , local_y - 1); // CP
-        vec2 d11 = new vec2(local_x - 1, local_y - 1); // DP
-
         // wrapping the grid cornor co-ordinates to grid size &
         // to access the gradients[][] safely & sample for infinite noise points
         //  + Enable Octaves implementation
@@ -106,11 +100,19 @@ public class Noise {
         vec2 g01 = gradients[wrap_x0][wrap_y1];
         vec2 g11 = gradients[wrap_x1][wrap_y1];
 
+        /* Distance vectors of (P) w.r.t the cornors
+         *
+         * (local_x    , local_y    ) = AP
+         * (local_x - 1, local_y    ) = BP
+         * (local_x    , local_y - 1) = CP
+         * (local_x - 1, local_y - 1) = DP
+         */
         // how much is P in direction of the cornors
-        float n00 = vec2.dot(g00, d00);
-        float n10 = vec2.dot(g10, d10);
-        float n01 = vec2.dot(g01, d01);
-        float n11 = vec2.dot(g11, d11);
+        // Directly applying dot formula without creating new vec2() as d00, d10, ... [Optimization of previous version]
+        float n00 = g00.x *  local_x      +  g00.y *  local_y;
+        float n10 = g10.x * (local_x - 1) +  g10.y *  local_y;
+        float n01 = g01.x *  local_x      +  g01.y * (local_y - 1);
+        float n11 = g11.x * (local_x - 1) +  g11.y * (local_y - 1);
 
         local_x = fade(local_x);
         local_y = fade(local_y);

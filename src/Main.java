@@ -13,7 +13,7 @@ public class Main {
 
     Main() {
 
-        Noise noise = new Noise(256,256);
+        Noise noise = new Noise(512,512);
         int width  = 512;
         int height = 512;
         
@@ -22,7 +22,9 @@ public class Main {
         window.setResizable(false);
 
         BufferedImage image_texture = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        
         float scale = 1 / 32f;
+
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 float noise_x = x / ((float) width)  * noise.getGridWidth()  * scale;
