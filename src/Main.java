@@ -15,13 +15,6 @@ public class Main {
 
         Noise noise = new Noise(512,512);
 
-        try {
-            // noise.save("data//noise_data.pnd");
-            noise = Noise.load("data//noise_data.pnd");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         int width  = 512;
         int height = 512;
         
@@ -33,17 +26,7 @@ public class Main {
         
         float scale = 1 / 32f;
 
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                float noise_x = x / ((float) width)  * noise.getGridWidth()  * scale;
-                float noise_y = y / ((float) height) * noise.getGridHeight() * scale;
-                
-                float value = noise.sampleFractal(noise_x, noise_y, 16);
-                int color = (int)((value + 1) * 0.5f * 255);
-
-                image_texture.setRGB(x, y, new Color(color, color, color).getRGB());
-            }
-        }
+        redraw(noise, width, height, scale, image_texture);
 
         // writePNG(image_texture, "noise_render_" + System.currentTimeMillis() + ".png");
 
@@ -62,10 +45,49 @@ public class Main {
         window.pack();
         window.setLocationRelativeTo(null);
         window.setVisible(true);
+
+        // while (true) {
+        //     scale -= 0.001f;
+        //     redraw(noise, width, height, scale, image_texture);
+        //     canvas.repaint();
+        //     try {
+        //         Thread.sleep(16);
+        //     } catch (InterruptedException e) {
+        //         e.printStackTrace();
+        //     }
+        // }
     }
 
     public static void main(String args[]) {        
         new Main();
+    }
+
+    public void redraw(Noise noise, int width, int height, float scale, BufferedImage image_texture) {
+        int color;
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                float noise_x = x / ((float) width)  * noise.getGridWidth()  * scale;
+                float noise_y = y / ((float) height) * noise.getGridHeight() * scale;
+                
+                float value = noise.sampleFractal(noise_x, noise_y, 8);
+
+                if (value < 0.05f) {
+                    image_texture.setRGB(x, y, Color.BLUE.getRGB());
+                    continue;
+                } else if (value >= 0.05f && value < 0.1f) {
+                    image_texture.setRGB(x, y, Color.YELLOW.getRGB());
+                    continue;
+                } else if (value >= 0.1f) {
+                    image_texture.setRGB(x, y, Color.GREEN.getRGB());
+                    continue;
+                }
+                else {
+                    color = (int)((value + 1) * 0.5f * 255);
+                }
+
+                image_texture.setRGB(x, y, new Color(color, color, color).getRGB());
+            }
+        }
     }
 
     public static void writePNG(BufferedImage image, String fileName) {
